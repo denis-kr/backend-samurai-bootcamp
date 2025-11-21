@@ -1,0 +1,22 @@
+{
+  "name": "backend-samurai",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"tsc --watch\" \"node --inspect=9229 --watch-path=./dist dist/index.js\""
+  },
+  "keywords": [],
+  "author": "denis-kr",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.5",
+    "@types/node": "^24.10.1",
+    "concurrently": "^9.2.1",
+    "typescript": "^5.9.3"
+  }
+}

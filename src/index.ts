@@ -1,12 +1,13 @@
-import express from "express";
-import type { Express, Request, Response } from "express";
+import { app } from "./setting.js";
+import { runDb } from "./repositories/db.js";
 
-export const app: Express = express();
-app.use(express.json());
+const port = process.env.PORT || 3000;
 
-app.get("/", (req: Request, res: Response) => {
-  // debugger;
-  res.send({ test: "Hello World 123457" });
-});
+const startApp = async () => {
+  await runDb();
+  app.listen(port, () => {
+    console.log(`Example app listening at http://localhost:${port}`);
+  });
+};
 
-app.listen(3000);
+startApp();

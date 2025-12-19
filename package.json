@@ -6,13 +6,15 @@
   "type": "module",
   "scripts": {
     "test": "vitest",
-    "dev": "concurrently \"tsc --watch\" \"node --inspect=9229 --watch-path=./dist dist/index.js\""
+    "dev": "concurrently \"tsc --watch\" \"node --inspect=9229 --watch-path=./dist dist/src/index.js\""
   },
   "keywords": [],
   "author": "denis-kr",
   "license": "ISC",
   "dependencies": {
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "express-validator": "^7.3.1",
+    "mongodb": "^7.0.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.5",

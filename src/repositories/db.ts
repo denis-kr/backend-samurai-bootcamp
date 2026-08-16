@@ -8,6 +8,7 @@ const samurai = client.db("samurai");
 
 export const posts = samurai.collection("posts");
 export const blogs = samurai.collection("blogs");
+export const users = samurai.collection("users");
 
 export async function runDb() {
   try {

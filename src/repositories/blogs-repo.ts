@@ -10,6 +10,14 @@ export type Blog = {
   isMembership?: boolean;
 };
 
+export type FindAllBlogsParams = {
+  pageSize: number;
+  pageNumber: number;
+  searchNameTerm: string | null;
+  sortDirection: "asc" | "desc";
+  sortBy: string;
+};
+
 export const blogsRepository = {
   async findById(id: string) {
     if (!ObjectId.isValid(id)) {
@@ -17,8 +25,24 @@ export const blogsRepository = {
     }
     return blogs.findOne({ _id: new ObjectId(id) });
   },
-  async findAll() {
-    return blogs.find().toArray();
+  async getTotalCount() {
+    return blogs.countDocuments();
+  },
+  async findAll({
+    pageSize,
+    pageNumber,
+    searchNameTerm,
+    sortDirection,
+    sortBy,
+  }: FindAllBlogsParams) {
+    const skip = pageSize && pageNumber ? (pageNumber - 1) * pageSize : 0;
+    const limit = pageSize || 0;
+    const query = searchNameTerm
+      ? { name: { $regex: searchNameTerm, $options: "i" } }
+      : {};
+    const sortQuery =
+      sortBy && sortDirection ? { [sortBy]: sortDirection } : {};
+    return blogs.find(query).sort(sortQuery).skip(skip).limit(limit).toArray();
   },
   async create(blog: Blog) {
     const result = await blogs.insertOne(blog);

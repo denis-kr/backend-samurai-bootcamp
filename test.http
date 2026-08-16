@@ -1,0 +1,9 @@
+POST http://localhost:3000/blogs HTTP/1.1
+content-type: application/json
+Authorization: Basic admin:qwerty
+
+{
+    "description": "Description 5",
+    "websiteUrl": "https://www.blog5.com",
+    "name": "Blog 5"
+}

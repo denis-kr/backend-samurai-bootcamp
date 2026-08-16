@@ -1,0 +1,11 @@
+node_modules
+.git
+.gitignore
+.env
+.env.local
+build
+Dockerfile
+docker-compose.yml
+.DS_Store
+*.log
+pnpm-debug.log

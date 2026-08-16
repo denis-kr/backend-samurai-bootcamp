@@ -1,12 +1,27 @@
 import { blogsRepository } from "../repositories/blogs-repo.js";
-import type { Blog } from "../repositories/blogs-repo.js";
+import type { Blog, FindAllBlogsParams } from "../repositories/blogs-repo.js";
+import type { FindAllPostsParams } from "../repositories/posts-repo.js";
+import { postsRepository } from "../repositories/posts-repo.js";
 
 export const blogsService = {
-  findAllBlogs: () => {
-    return blogsRepository.findAll();
+  findAllBlogs: async (params: FindAllBlogsParams) => {
+    const totalCount = await blogsRepository.getTotalCount();
+    const blogs = await blogsRepository.findAll(params);
+
+    return { items: blogs, totalCount };
   },
   findBlogById: (id: string) => {
     return blogsRepository.findById(id);
+  },
+  findPostsByBlogId: async (
+    params: Omit<FindAllPostsParams, "blogId"> & { blogId: string }
+  ) => {
+    const posts = await postsRepository.findAll(params);
+    const totalCount = await postsRepository.getTotalCount({
+      blogId: params.blogId,
+    });
+
+    return { items: posts, totalCount };
   },
   deleteBlogById: (id: string) => {
     return blogsRepository.deleteById(id);

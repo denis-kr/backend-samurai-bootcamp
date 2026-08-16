@@ -1,32 +1,79 @@
 import express, { Router, type Response } from "express";
 import { blogsService } from "../domain/blogs-service.js";
-import { createUpdateBodyValidationMiddleware } from "../middleware/validation/validation-blogs.js";
-import { sendErrorsIfAnyMiddleware } from "../middleware/validation/validation-universal.js";
+import {
+  createUpdateBodyValidationMiddleware,
+  blogIdValidationMiddleware,
+} from "../middleware/validation/validation-blogs.js";
+import {
+  paginationValidationMiddleware,
+  idValidationMiddleware,
+  sendErrorsIfAnyMiddleware,
+} from "../middleware/validation/validation-universal.js";
 import { basicAuthMiddleware } from "../middleware/auth/basic.js";
 import type {
   RequestWithParamsAndBody,
   RequestWithBody,
   RequestWithParams,
+  RequestWithQuery,
+  RequestWithParamsAndQuery,
 } from "../utils/types.js";
 import type { Blog } from "../repositories/blogs-repo.js";
+import { postsService } from "../domain/posts-service.js";
+import { createNewPostForBlogValidationMiddleware } from "../middleware/validation/validation-posts.js";
 
 const router: Router = express.Router();
 
 // get all blogs
-router.get("/", async (_, res) => {
-  const blogs = await blogsService.findAllBlogs();
-  return res.status(200).json(
-    blogs.map((blog) => ({
-      ...blog,
-      id: blog._id.toString(),
-      _id: undefined,
-    }))
-  );
-});
+router.get(
+  "/",
+  paginationValidationMiddleware,
+  sendErrorsIfAnyMiddleware,
+  async (
+    req: RequestWithQuery<{
+      pageSize?: number;
+      pageNumber?: number;
+      sortBy?: string;
+      sortDirection?: "asc" | "desc";
+      searchNameTerm?: string;
+    }>,
+    res: Response
+  ) => {
+    const {
+      pageSize = 10,
+      pageNumber = 1,
+      searchNameTerm = null,
+      sortDirection = "desc",
+      sortBy = "createdAt",
+    } = req.query;
+    const blogs = await blogsService.findAllBlogs({
+      pageSize,
+      pageNumber,
+      searchNameTerm,
+      sortDirection,
+      sortBy,
+    });
+
+    const totalCount = blogs.totalCount;
+
+    return res.status(200).json({
+      pagesCount: Math.ceil(totalCount / (pageSize || 10)),
+      page: pageNumber,
+      pageSize,
+      totalCount: totalCount,
+      items: blogs.items.map((blog) => ({
+        ...blog,
+        id: blog._id.toString(),
+        _id: undefined,
+      })),
+    });
+  }
+);
 
 // get blog by id
 router.get(
   "/:id",
+  idValidationMiddleware,
+  sendErrorsIfAnyMiddleware,
   async (req: RequestWithParams<{ id: string }>, res: Response) => {
     const id = req.params.id;
     const blog = await blogsService.findBlogById(id);
@@ -40,7 +87,99 @@ router.get(
   }
 );
 
+//Returns all posts for specified blog
+router.get(
+  "/:blogId/posts",
+  blogIdValidationMiddleware,
+  paginationValidationMiddleware,
+  sendErrorsIfAnyMiddleware,
+  async (
+    req: RequestWithParamsAndQuery<
+      { blogId: string },
+      {
+        pageSize?: number;
+        pageNumber?: number;
+        sortBy?: string;
+        sortDirection?: "asc" | "desc";
+      }
+    >,
+    res: Response
+  ) => {
+    const blogId = req.params.blogId;
+    const {
+      pageSize = 10,
+      pageNumber = 1,
+      sortBy = "createdAt",
+      sortDirection = "desc",
+    } = req.query;
+
+    const blog = await blogsService.findBlogById(blogId);
+    if (!blog) {
+      return res.sendStatus(404);
+    }
+    const posts = await blogsService.findPostsByBlogId({
+      pageSize,
+      pageNumber,
+      sortBy,
+      sortDirection,
+      blogId,
+    });
+    const totalCount = posts.totalCount;
+
+    return res.status(200).json({
+      pagesCount: Math.ceil(totalCount / (pageSize || 10)),
+      page: pageNumber,
+      pageSize,
+      totalCount: totalCount,
+      items: posts.items.map((post) => ({
+        ...post,
+        id: post._id.toString(),
+        _id: undefined,
+      })),
+    });
+  }
+);
+
 router.use(basicAuthMiddleware);
+
+//Create new post for specified blog
+router.post(
+  "/:blogId/posts",
+  blogIdValidationMiddleware,
+  createNewPostForBlogValidationMiddleware,
+  sendErrorsIfAnyMiddleware,
+  async (
+    req: RequestWithParamsAndBody<
+      { blogId: string },
+      { title: string; shortDescription: string; content: string }
+    >,
+    res: Response
+  ) => {
+    const blogId = req.params.blogId;
+    const { title, shortDescription, content } = req.body;
+
+    const blog = await blogsService.findBlogById(blogId);
+    if (!blog) {
+      return res.sendStatus(404);
+    }
+
+    const newPostId = await postsService.createPost({
+      title,
+      shortDescription,
+      content,
+      blogId,
+      blogName: blog.name,
+    });
+
+    const newPost = await postsService.findPostById(newPostId);
+    if (newPost) {
+      return res
+        .status(201)
+        .json({ ...newPost, id: newPost._id.toString(), _id: undefined });
+    }
+    return res.sendStatus(500);
+  }
+);
 
 //add new blog
 router.post(

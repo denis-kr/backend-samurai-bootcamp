@@ -1,4 +1,13 @@
-import { body } from "express-validator";
+import { body, param } from "express-validator";
+
+export const blogIdValidationMiddleware = [
+  param("blogId")
+    .trim()
+    .notEmpty()
+    .withMessage("blogId is required")
+    .isString()
+    .withMessage("blogId must be a string"),
+];
 
 export const createUpdateBodyValidationMiddleware = [
   body("websiteUrl")

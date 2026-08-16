@@ -2,35 +2,81 @@ import { type Post } from "./../repositories/posts-repo.js";
 import express, { Router, type Response } from "express";
 import { basicAuthMiddleware } from "../middleware/auth/basic.js";
 import { createUpdateBodyValidationMiddleware } from "../middleware/validation/validation-posts.js";
-import { sendErrorsIfAnyMiddleware } from "../middleware/validation/validation-universal.js";
 import type {
   RequestWithBody,
+  RequestWithParams,
   RequestWithParamsAndBody,
+  RequestWithQuery,
 } from "../utils/types.js";
 import { postsService } from "../domain/posts-service.js";
+import {
+  paginationValidationMiddleware,
+  idValidationMiddleware,
+  sendErrorsIfAnyMiddleware,
+} from "../middleware/validation/validation-universal.js";
 
 const router: Router = express.Router();
 
 //get all posts
-router.get("/", async (_, res) => {
-  const posts = await postsService.findAllPosts();
-  return res.send(
-    posts.map((post) => ({ ...post, id: post._id.toString(), _id: undefined }))
-  );
-});
+router.get(
+  "/",
+  paginationValidationMiddleware,
+  sendErrorsIfAnyMiddleware,
+  async (
+    req: RequestWithQuery<{
+      pageSize?: number;
+      pageNumber?: number;
+      sortBy?: string;
+      sortDirection?: "asc" | "desc";
+    }>,
+    res: Response
+  ) => {
+    const {
+      pageSize = 10,
+      pageNumber = 1,
+      sortBy = "createdAt",
+      sortDirection = "desc",
+    } = req.query;
+    const posts = await postsService.findAllPosts({
+      pageSize,
+      pageNumber,
+      sortBy,
+      sortDirection,
+    });
+
+    const totalCount = posts.totalCount;
+
+    return res.status(200).json({
+      pagesCount: Math.ceil(totalCount / (pageSize || 10)),
+      page: pageNumber,
+      pageSize,
+      totalCount,
+      items: posts.items.map((post) => ({
+        ...post,
+        id: post._id.toString(),
+        _id: undefined,
+      })),
+    });
+  }
+);
 
 //get post by id
-router.get("/:id", async (req, res) => {
-  const id = req.params.id;
-  const post = await postsService.findPostById(id);
-  if (post) {
-    return res
-      .status(200)
-      .json({ ...post, id: post._id.toString(), _id: undefined });
-  } else {
-    return res.sendStatus(404);
+router.get(
+  "/:id",
+  idValidationMiddleware,
+  sendErrorsIfAnyMiddleware,
+  async (req: RequestWithParams<{ id: string }>, res: Response) => {
+    const id = req.params.id;
+    const post = await postsService.findPostById(id);
+    if (post) {
+      return res
+        .status(200)
+        .json({ ...post, id: post._id.toString(), _id: undefined });
+    } else {
+      return res.sendStatus(404);
+    }
   }
-});
+);
 
 router.use(basicAuthMiddleware);
 

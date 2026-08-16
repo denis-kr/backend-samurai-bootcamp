@@ -1,9 +1,13 @@
 import { postsRepository } from "../repositories/posts-repo.js";
-import type { Post } from "../repositories/posts-repo.js";
+import type { FindAllPostsParams, Post } from "../repositories/posts-repo.js";
 
 export const postsService = {
-  findAllPosts: () => {
-    return postsRepository.findAll();
+  findAllPosts: async (params: FindAllPostsParams) => {
+    const posts = await postsRepository.findAll(params);
+
+    const totalCount = await postsRepository.getTotalCount();
+
+    return { items: posts, totalCount };
   },
   findPostById: (id: string) => {
     return postsRepository.findById(id);
@@ -12,7 +16,8 @@ export const postsService = {
     return postsRepository.deleteById(id);
   },
   createPost: (post: Post) => {
-    return postsRepository.create(post);
+    const newPost = { ...post, createdAt: new Date() };
+    return postsRepository.create(newPost);
   },
   updatePost(id: string, post: Post) {
     return postsRepository.updateById(id, post);

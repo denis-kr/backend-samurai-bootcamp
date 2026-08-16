@@ -9,6 +9,14 @@ export type Post = {
   blogName: string;
 };
 
+export type FindAllPostsParams = {
+  pageSize: number;
+  pageNumber: number;
+  sortBy: string;
+  sortDirection: "asc" | "desc";
+  blogId?: string;
+};
+
 export const postsRepository = {
   async findById(id: string) {
     if (!ObjectId.isValid(id)) {
@@ -16,11 +24,28 @@ export const postsRepository = {
     }
     return posts.findOne({ _id: new ObjectId(id) });
   },
-  async findAll() {
-    return posts.find().toArray();
+  async getTotalCount(fields?: { blogId?: string }) {
+    const filter = fields?.blogId ? { blogId: fields.blogId } : {};
+    return posts.countDocuments(filter);
   },
-  async create(post: Post) {
-    const result = await posts.insertOne({ ...post, createdAt: new Date() });
+  async findAll({
+    pageSize,
+    pageNumber,
+    sortBy,
+    sortDirection,
+    blogId,
+  }: FindAllPostsParams) {
+    const skip = pageSize && pageNumber ? (pageNumber - 1) * pageSize : 0;
+    const limit = pageSize || 0;
+    const sort: any = {};
+    if (sortBy && sortDirection) {
+      sort[sortBy] = sortDirection;
+    }
+    const filter = blogId ? { blogId } : {};
+    return posts.find(filter).sort(sort).skip(skip).limit(limit).toArray();
+  },
+  async create(post: Post & { createdAt: Date }) {
+    const result = await posts.insertOne(post);
     return result.insertedId.toString();
   },
   async deleteById(id: string) {

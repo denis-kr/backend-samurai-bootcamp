@@ -1,32 +1,37 @@
 import { body } from "express-validator";
 import { blogsRepository } from "../../repositories/blogs-repo.js";
 
-export const createUpdateBodyValidationMiddleware = [
-  body("shortDescription")
-    .trim()
-    .notEmpty()
-    .withMessage("Short description is required")
-    .isString()
-    .withMessage("Short description must be a string")
-    .isLength({ max: 100 })
-    .withMessage("Short description must not exceed 100 characters"),
-  body("title")
-    .trim()
-    .notEmpty()
-    .withMessage("Title is required")
-    .isString()
-    .withMessage("Title must be a string")
-    .isLength({ max: 30 })
-    .withMessage("Title must not exceed 30 characters"),
+const shortDescription = body("shortDescription")
+  .trim()
+  .notEmpty()
+  .withMessage("Short description is required")
+  .isString()
+  .withMessage("Short description must be a string")
+  .isLength({ max: 100 })
+  .withMessage("Short description must not exceed 100 characters");
 
-  body("content")
-    .trim()
-    .notEmpty()
-    .withMessage("Content is required")
-    .isString()
-    .withMessage("Content must be a string")
-    .isLength({ max: 1000 })
-    .withMessage("Content must not exceed 1000 characters"),
+const title = body("title")
+  .trim()
+  .notEmpty()
+  .withMessage("Title is required")
+  .isString()
+  .withMessage("Title must be a string")
+  .isLength({ max: 30 })
+  .withMessage("Title must not exceed 30 characters");
+
+const content = body("content")
+  .trim()
+  .notEmpty()
+  .withMessage("Content is required")
+  .isString()
+  .withMessage("Content must be a string")
+  .isLength({ max: 1000 })
+  .withMessage("Content must not exceed 1000 characters");
+
+export const createUpdateBodyValidationMiddleware = [
+  shortDescription,
+  title,
+  content,
   body("blogId")
     .trim()
     .notEmpty()
@@ -43,4 +48,10 @@ export const createUpdateBodyValidationMiddleware = [
       req.body.blogName = blog.name;
     })
     .withMessage("Invalid value"),
+];
+
+export const createNewPostForBlogValidationMiddleware = [
+  shortDescription,
+  title,
+  content,
 ];

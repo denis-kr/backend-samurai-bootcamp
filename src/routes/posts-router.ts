@@ -32,11 +32,13 @@ router.get(
     res: Response
   ) => {
     const {
-      pageSize = 10,
-      pageNumber = 1,
+      pageSize: pageSizeQuery = 10,
+      pageNumber: pageNumberQuery = 1,
       sortBy = "createdAt",
       sortDirection = "desc",
     } = req.query;
+    const pageSize = Number(pageSizeQuery) || 10;
+    const pageNumber = Number(pageNumberQuery) || 1;
     const posts = await postsService.findAllPosts({
       pageSize,
       pageNumber,

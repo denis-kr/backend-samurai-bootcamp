@@ -36,7 +36,7 @@ export const blogsRepository = {
     sortBy,
   }: FindAllBlogsParams) {
     const skip = pageSize && pageNumber ? (pageNumber - 1) * pageSize : 0;
-    const limit = pageSize || 0;
+    const limit = Number(pageSize) || 0;
     const query = searchNameTerm
       ? { name: { $regex: searchNameTerm, $options: "i" } }
       : {};
@@ -61,7 +61,7 @@ export const blogsRepository = {
     }
     const result = await blogs.updateOne(
       { _id: new ObjectId(id) },
-      { $set: blog }
+      { $set: blog },
     );
     return result.matchedCount === 1;
   },

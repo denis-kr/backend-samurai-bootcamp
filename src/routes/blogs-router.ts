@@ -39,12 +39,14 @@ router.get(
     res: Response
   ) => {
     const {
-      pageSize = 10,
-      pageNumber = 1,
+      pageSize: pageSizeQuery = 10,
+      pageNumber: pageNumberQuery = 1,
       searchNameTerm = null,
       sortDirection = "desc",
       sortBy = "createdAt",
     } = req.query;
+    const pageSize = Number(pageSizeQuery) || 10;
+    const pageNumber = Number(pageNumberQuery) || 1;
     const blogs = await blogsService.findAllBlogs({
       pageSize,
       pageNumber,
@@ -107,11 +109,13 @@ router.get(
   ) => {
     const blogId = req.params.blogId;
     const {
-      pageSize = 10,
-      pageNumber = 1,
+      pageSize: pageSizeQuery = 10,
+      pageNumber: pageNumberQuery = 1,
       sortBy = "createdAt",
       sortDirection = "desc",
     } = req.query;
+    const pageSize = Number(pageSizeQuery) || 10;
+    const pageNumber = Number(pageNumberQuery) || 1;
 
     const blog = await blogsService.findBlogById(blogId);
     if (!blog) {

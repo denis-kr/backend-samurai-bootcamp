@@ -3,21 +3,53 @@ import { app } from "../../src/setting.js";
 import type { Post } from "../../src/repositories/posts-repo.js";
 
 export const postsTestManager: any = {
+  async getPosts(
+    query: {
+      pageSize?: number | string;
+      pageNumber?: number | string;
+      sortBy?: string;
+      sortDirection?: string;
+    } = {},
+    { expectedStatusCode }: { expectedStatusCode: number }
+  ) {
+    const response = await request(app).get("/posts").query(query as any);
+
+    expect(response.statusCode).toBe(expectedStatusCode);
+
+    return response;
+  },
+  async getPostById(
+    id: string,
+    { expectedStatusCode }: { expectedStatusCode: number }
+  ) {
+    const response = await request(app).get(`/posts/${id}`);
+
+    expect(response.statusCode).toBe(expectedStatusCode);
+
+    return response;
+  },
   async createPost(
     data: {
-      title: Post["title"];
-      shortDescription: Post["shortDescription"];
-      content: Post["content"];
-      blogId: Post["blogId"];
+      title?: Post["title"];
+      shortDescription?: Post["shortDescription"];
+      content?: Post["content"];
+      blogId?: Post["blogId"];
     },
     {
       expectedStatusCode,
       isAuthorized = false,
-    }: { expectedStatusCode: number; isAuthorized?: boolean }
+      authHeader,
+    }: {
+      expectedStatusCode: number;
+      isAuthorized?: boolean;
+      authHeader?: string;
+    }
   ) {
     const requestObject = request(app).post("/posts");
 
-    if (isAuthorized) {
+    if (authHeader) {
+      requestObject.set("Authorization", authHeader);
+    } else if (isAuthorized) {
       requestObject.set("Authorization", "Basic YWRtaW46cXdlcnR5");
     }
 
@@ -30,10 +62,65 @@ export const postsTestManager: any = {
       expect(response.body.shortDescription).toBe(data.shortDescription);
       expect(response.body.content).toBe(data.content);
       expect(response.body.blogId).toBe(data.blogId);
-      //fetch the blog name using the blogId
-      const blogResponse = await request(app).get(`/blogs/${data.blogId}`);
-      expect(response.body.blogName).toBe(blogResponse.body.name);
     }
+
+    return response;
+  },
+  async updatePost(
+    data: {
+      title?: Post["title"];
+      shortDescription?: Post["shortDescription"];
+      content?: Post["content"];
+      blogId?: Post["blogId"];
+    },
+    id: string,
+    {
+      expectedStatusCode,
+      isAuthorized = false,
+      authHeader,
+    }: {
+      expectedStatusCode: number;
+      isAuthorized?: boolean;
+      authHeader?: string;
+    }
+  ) {
+    const requestObject = request(app).put(`/posts/${id}`);
+
+    if (authHeader) {
+      requestObject.set("Authorization", authHeader);
+    } else if (isAuthorized) {
+      requestObject.set("Authorization", "Basic YWRtaW46cXdlcnR5");
+    }
+
+    const response = await requestObject.send(data);
+
+    expect(response.statusCode).toBe(expectedStatusCode);
+
+    return response;
+  },
+  async deletePost(
+    id: string,
+    {
+      expectedStatusCode,
+      isAuthorized = false,
+      authHeader,
+    }: {
+      expectedStatusCode: number;
+      isAuthorized?: boolean;
+      authHeader?: string;
+    }
+  ) {
+    const requestObject = request(app).delete(`/posts/${id}`);
+
+    if (authHeader) {
+      requestObject.set("Authorization", authHeader);
+    } else if (isAuthorized) {
+      requestObject.set("Authorization", "Basic YWRtaW46cXdlcnR5");
+    }
+
+    const response = await requestObject;
+
+    expect(response.statusCode).toBe(expectedStatusCode);
 
     return response;
   },

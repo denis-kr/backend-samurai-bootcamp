@@ -16,6 +16,11 @@ export type FindAllUsersParams = {
   searchEmailTerm: string | null;
 };
 
+// Maps public API field names (as returned in responses) to the Mongo document fields they're stored under.
+const sortFieldMap: Record<string, string> = {
+  login: "userName",
+};
+
 export const usersRepository = {
   //TODO fix type any
   async create(user: any) {
@@ -64,7 +69,7 @@ export const usersRepository = {
     const limit = pageSize || 0;
     const sort: any = {};
     if (sortBy && sortDirection) {
-      sort[sortBy] = sortDirection;
+      sort[sortFieldMap[sortBy] ?? sortBy] = sortDirection;
     }
 
     const searchFilters = [];

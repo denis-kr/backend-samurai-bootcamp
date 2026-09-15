@@ -149,5 +149,33 @@ describe("Users", () => {
       expect(response.body.pagesCount).toBe(2);
       expect(response.body.items).toHaveLength(1);
     });
+
+    //GET /users 200 sortBy=login sorts alphabetically, since the DB field is userName not login
+    it("should sort items alphabetically by login when sortBy=login", async () => {
+      for (const login of ["zebra_ser", "apple_ser", "mango_ser"]) {
+        await usersTestManager.createUser(
+          { login, password: "password1", email: `${login}@mail.com` },
+          { expectedStatusCode: 201, isAuthorized: true },
+        );
+      }
+
+      const response = await usersTestManager.getUsers(
+        {
+          pageSize: 15,
+          pageNumber: 1,
+          searchLoginTerm: "seR",
+          searchEmailTerm: ".com",
+          sortDirection: "asc",
+          sortBy: "login",
+        },
+        { expectedStatusCode: 200, isAuthorized: true },
+      );
+
+      expect(response.body.items.map((item: any) => item.login)).toEqual([
+        "apple_ser",
+        "mango_ser",
+        "zebra_ser",
+      ]);
+    });
   });
 });

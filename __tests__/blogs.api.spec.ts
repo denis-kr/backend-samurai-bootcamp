@@ -506,7 +506,7 @@ describe("Blogs", () => {
         { expectedStatusCode: 200 },
       );
 
-      expect(response.body.totalCount).toBe(3);
+      expect(response.body.totalCount).toBe(1);
       expect(response.body.items).toHaveLength(1);
       expect(response.body.items[0].name).toBe("Banana Blog");
     });

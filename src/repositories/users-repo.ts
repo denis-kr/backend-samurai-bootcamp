@@ -35,7 +35,7 @@ export const usersRepository = {
     const searchFilters = [];
     if (fields?.searchLoginTerm) {
       searchFilters.push({
-        login: { $regex: fields.searchLoginTerm, $options: "i" },
+        userName: { $regex: fields.searchLoginTerm, $options: "i" },
       });
     }
     if (fields?.searchEmailTerm) {
@@ -47,7 +47,7 @@ export const usersRepository = {
     return users.countDocuments(query);
   },
   async findByLogin(login: string) {
-    return users.findOne({ login });
+    return users.findOne({ userName: login });
   },
   async findByEmail(email: string) {
     return users.findOne({ email });
@@ -69,7 +69,9 @@ export const usersRepository = {
 
     const searchFilters = [];
     if (searchLoginTerm) {
-      searchFilters.push({ login: { $regex: searchLoginTerm, $options: "i" } });
+      searchFilters.push({
+        userName: { $regex: searchLoginTerm, $options: "i" },
+      });
     }
     if (searchEmailTerm) {
       searchFilters.push({ email: { $regex: searchEmailTerm, $options: "i" } });

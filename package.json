@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.ts",
   "type": "module",
+  "packageManager": "pnpm@12.4.1",
   "scripts": {
     "test": "vitest",
     "dev": "concurrently \"tsc --watch\" \"node --inspect=9229 --watch-path=./dist dist/src/index.js\""

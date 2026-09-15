@@ -4,19 +4,23 @@ import blogsRouter from "./routes/blogs-router.js";
 import postsRouter from "./routes/posts-router.js";
 import { blogsRepository } from "./repositories/blogs-repo.js";
 import { postsRepository } from "./repositories/posts-repo.js";
-// import { usersRepository } from "./repositories/users-repo.js";
-// import usersRouter from "./routes/users-router.js";
+import { usersRepository } from "./repositories/users-repo.js";
+import usersRouter from "./routes/users-router.js";
+import authRouter from "./routes/auth-router.js";
+// import commentsRouter from "./routes/coments-router.js";
 
 export const app: Express = express();
 
 app.use(express.json());
-// app.use("/users", usersRouter);
+app.use("/users", usersRouter);
+app.use("/auth", authRouter);
 app.use("/blogs", blogsRouter);
 app.use("/posts", postsRouter);
+// app.use("/comments", commentsRouter);
 
 app.delete("/testing/all-data", async (_, res: Response) => {
   await blogsRepository.deleteAll();
   await postsRepository.deleteAll();
-  // await usersRepository.deleteAll();
+  await usersRepository.deleteAll();
   res.sendStatus(204);
 });

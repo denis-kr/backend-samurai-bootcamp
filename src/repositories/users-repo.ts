@@ -1,43 +1,76 @@
-// import { users } from "./db.js";
-// import { ObjectId } from "mongodb";
+import { users } from "./db.js";
+import { ObjectId } from "mongodb";
 
-// //TODO
-// // export type User = {
-// //   login: string;
-// //   email: string;
-// //   createdAt: Date;
-// // };
+export type User = {
+  login: string;
+  email: string;
+  createdAt: Date;
+};
 
-// export const usersRepository = {
-//   async create(user: User) {
-//     const result = await users.insertOne(user);
-//     return result.insertedId.toString();
-//   },
-//   findAll({
-//     pageSize,
-//     pageNumber,
-//     sortBy,
-//     sortDirection,
-//     searchLoginTerm,
-//     searchEmailTerm,
-//   }) {
-//     const skip = pageSize && pageNumber ? (pageNumber - 1) * pageSize : 0;
-//     const limit = pageSize || 0;
-//     const sort: any = {};
-//     if (sortBy && sortDirection) {
-//       sort[sortBy] = sortDirection;
-//     }
+export type FindAllUsersParams = {
+  pageSize: number;
+  pageNumber: number;
+  sortBy: string;
+  sortDirection: "asc" | "desc";
+  searchLoginTerm: string | null;
+  searchEmailTerm: string | null;
+};
 
-//     return users.find().sort(sort).skip(skip).limit(limit).toArray();
-//   },
-//   async deleteById(id: string) {
-//     if (!ObjectId.isValid(id)) {
-//       return false;
-//     }
-//     const result = await users.deleteOne({ _id: new ObjectId(id) });
-//     return result.deletedCount === 1;
-//   },
-//   async deleteAll() {
-//     await users.drop();
-//   },
-// };
+export const usersRepository = {
+  //TODO fix type any
+  async create(user: any) {
+    const result = await users.insertOne(user);
+    return result.insertedId?.toString();
+  },
+  async findById(id: string) {
+    if (!ObjectId.isValid(id)) {
+      return null;
+    }
+    return users.findOne({ _id: new ObjectId(id) });
+  },
+  async getTotalCount() {
+    return users.countDocuments();
+  },
+  async findByLogin(login: string) {
+    return users.findOne({ login });
+  },
+  async findByEmail(email: string) {
+    return users.findOne({ email });
+  },
+  findAll({
+    pageSize,
+    pageNumber,
+    sortBy,
+    sortDirection,
+    searchLoginTerm,
+    searchEmailTerm,
+  }: FindAllUsersParams) {
+    const skip = pageSize && pageNumber ? (pageNumber - 1) * pageSize : 0;
+    const limit = pageSize || 0;
+    const sort: any = {};
+    if (sortBy && sortDirection) {
+      sort[sortBy] = sortDirection;
+    }
+
+    const searchFilters = [];
+    if (searchLoginTerm) {
+      searchFilters.push({ login: { $regex: searchLoginTerm, $options: "i" } });
+    }
+    if (searchEmailTerm) {
+      searchFilters.push({ email: { $regex: searchEmailTerm, $options: "i" } });
+    }
+    const query = searchFilters.length ? { $or: searchFilters } : {};
+
+    return users.find(query).sort(sort).skip(skip).limit(limit).toArray();
+  },
+  async deleteById(id: string) {
+    if (!ObjectId.isValid(id)) {
+      return false;
+    }
+    const result = await users.deleteOne({ _id: new ObjectId(id) });
+    return result.deletedCount === 1;
+  },
+  async deleteAll() {
+    await users.drop();
+  },
+};

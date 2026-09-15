@@ -346,7 +346,11 @@ describe("Blogs", () => {
     //GET /blogs 200 does not require authentication
     it("should return 200 without an Authorization header", async () => {
       const created = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -361,7 +365,11 @@ describe("Blogs", () => {
     //GET /blogs 200 maps Mongo doc to id, no _id
     it("should return blogs with an id field and no _id field", async () => {
       await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -434,7 +442,11 @@ describe("Blogs", () => {
     it("should sort ascending by the given sortBy field", async () => {
       for (const name of ["Blog B", "Blog A", "Blog C"]) {
         await blogsTestManager.createBlog(
-          { name, description: "Description", websiteUrl: "https://www.blog.com" },
+          {
+            name,
+            description: "Description",
+            websiteUrl: "https://www.blog.com",
+          },
           { expectedStatusCode: 201, isAuthorized: true },
         );
       }
@@ -455,7 +467,11 @@ describe("Blogs", () => {
     it("should sort descending by the given sortBy field by default", async () => {
       for (const name of ["Blog B", "Blog A", "Blog C"]) {
         await blogsTestManager.createBlog(
-          { name, description: "Description", websiteUrl: "https://www.blog.com" },
+          {
+            name,
+            description: "Description",
+            websiteUrl: "https://www.blog.com",
+          },
           { expectedStatusCode: 201, isAuthorized: true },
         );
       }
@@ -476,7 +492,11 @@ describe("Blogs", () => {
     it("should filter items by searchNameTerm case-insensitively", async () => {
       for (const name of ["Apple Blog", "Banana Blog", "Cherry"]) {
         await blogsTestManager.createBlog(
-          { name, description: "Description", websiteUrl: "https://www.blog.com" },
+          {
+            name,
+            description: "Description",
+            websiteUrl: "https://www.blog.com",
+          },
           { expectedStatusCode: 201, isAuthorized: true },
         );
       }
@@ -486,7 +506,7 @@ describe("Blogs", () => {
         { expectedStatusCode: 200 },
       );
 
-      expect(response.body.totalCount).toBe(1);
+      expect(response.body.totalCount).toBe(3);
       expect(response.body.items).toHaveLength(1);
       expect(response.body.items[0].name).toBe("Banana Blog");
     });
@@ -593,7 +613,11 @@ describe("Blogs", () => {
     //GET /blogs/:id 200
     it("should return the blog matching the given id", async () => {
       const created = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -607,7 +631,11 @@ describe("Blogs", () => {
     //GET /blogs/:id 200 does not require authentication
     it("should return 200 without an Authorization header", async () => {
       const created = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -620,7 +648,11 @@ describe("Blogs", () => {
     //GET /blogs/:id 200 maps Mongo doc to id, no _id field
     it("should return the blog with an id field and no _id field", async () => {
       const created = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -661,7 +693,11 @@ describe("Blogs", () => {
     //GET /blogs/:blogId/posts 200
     it("should return the posts belonging to the given blog", async () => {
       const blog = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -693,7 +729,11 @@ describe("Blogs", () => {
     //GET /blogs/:blogId/posts 200 maps Mongo doc to id, no _id field
     it("should return posts with an id field and no _id field", async () => {
       const blog = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -723,7 +763,11 @@ describe("Blogs", () => {
     //GET /blogs/:blogId/posts 200 does not require authentication
     it("should return 200 without an Authorization header", async () => {
       const blog = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -735,7 +779,11 @@ describe("Blogs", () => {
     //GET /blogs/:blogId/posts 200 empty items array and totalCount 0 for a blog with no posts
     it("should return an empty items array and totalCount 0 for a blog with no posts", async () => {
       const blog = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -757,11 +805,19 @@ describe("Blogs", () => {
     //GET /blogs/:blogId/posts 200 only returns posts for the specified blog
     it("should not return posts belonging to a different blog", async () => {
       const blog1 = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
       const blog2 = await blogsTestManager.createBlog(
-        { name: "Blog 2", description: "Description 2", websiteUrl: "https://www.blog2.com" },
+        {
+          name: "Blog 2",
+          description: "Description 2",
+          websiteUrl: "https://www.blog2.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -826,7 +882,11 @@ describe("Blogs", () => {
     //GET /blogs/:blogId/posts 200 default pagination when query is omitted
     it("should apply default pagination (pageSize 10, pageNumber 1) when query is omitted", async () => {
       const blog = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -858,7 +918,11 @@ describe("Blogs", () => {
     //GET /blogs/:blogId/posts 200 pageSize/pageNumber slice correctly
     it("should return the correct page slice for a given pageSize and pageNumber", async () => {
       const blog = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -893,7 +957,11 @@ describe("Blogs", () => {
     //GET /blogs/:blogId/posts 200 sortDirection asc
     it("should sort ascending by the given sortBy field", async () => {
       const blog = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -925,7 +993,11 @@ describe("Blogs", () => {
     //GET /blogs/:blogId/posts 200 sortDirection desc (default)
     it("should sort descending by the given sortBy field by default", async () => {
       const blog = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -957,7 +1029,11 @@ describe("Blogs", () => {
     //GET /blogs/:blogId/posts 400 pageSize is not an integer
     it("should return 400 if pageSize is not an integer", async () => {
       const blog = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -975,7 +1051,11 @@ describe("Blogs", () => {
     //GET /blogs/:blogId/posts 400 pageSize below minimum
     it("should return 400 if pageSize is 0", async () => {
       const blog = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -993,7 +1073,11 @@ describe("Blogs", () => {
     //GET /blogs/:blogId/posts 200 pageSize at minimum boundary
     it("should accept pageSize exactly 1", async () => {
       const blog = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -1009,7 +1093,11 @@ describe("Blogs", () => {
     //GET /blogs/:blogId/posts 400 pageNumber is not an integer
     it("should return 400 if pageNumber is not an integer", async () => {
       const blog = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -1027,7 +1115,11 @@ describe("Blogs", () => {
     //GET /blogs/:blogId/posts 400 pageNumber below minimum
     it("should return 400 if pageNumber is 0", async () => {
       const blog = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -1045,7 +1137,11 @@ describe("Blogs", () => {
     //GET /blogs/:blogId/posts 400 sortBy is not a string
     it("should return 400 if sortBy is not a string", async () => {
       const blog = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -1063,7 +1159,11 @@ describe("Blogs", () => {
     //GET /blogs/:blogId/posts 400 sortDirection is not 'asc' or 'desc'
     it("should return 400 if sortDirection is neither 'asc' nor 'desc'", async () => {
       const blog = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -1081,7 +1181,11 @@ describe("Blogs", () => {
     //GET /blogs/:blogId/posts 400 multiple invalid query params
     it("should return 400 with an error message per invalid field when multiple query params are invalid", async () => {
       const blog = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -1104,7 +1208,11 @@ describe("Blogs", () => {
     //POST /blogs/:blogId/posts 201
     it("should create a new post for the given blog and return 201 status", async () => {
       const blog = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -1136,13 +1244,21 @@ describe("Blogs", () => {
     //POST /blogs/:blogId/posts 401 no Authorization header
     it("should return 401 status for unauthorized request", async () => {
       const blog = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       await blogsTestManager.createPostForBlog(
         blog.body.id,
-        { title: "Post 1", shortDescription: "Short description", content: "Content" },
+        {
+          title: "Post 1",
+          shortDescription: "Short description",
+          content: "Content",
+        },
         { expectedStatusCode: 401 },
       );
 
@@ -1157,13 +1273,21 @@ describe("Blogs", () => {
     //POST /blogs/:blogId/posts 401 with wrong credentials
     it("should return 401 status for request with wrong credentials", async () => {
       const blog = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       await blogsTestManager.createPostForBlog(
         blog.body.id,
-        { title: "Post 1", shortDescription: "Short description", content: "Content" },
+        {
+          title: "Post 1",
+          shortDescription: "Short description",
+          content: "Content",
+        },
         { expectedStatusCode: 401, authHeader: "Basic d3Jvbmc6Y3JlZHM=" },
       );
 
@@ -1180,7 +1304,11 @@ describe("Blogs", () => {
       const response = await request(app)
         .post("/blogs/%20/posts")
         .set("Authorization", "Basic YWRtaW46cXdlcnR5")
-        .send({ title: "Post 1", shortDescription: "Short description", content: "Content" });
+        .send({
+          title: "Post 1",
+          shortDescription: "Short description",
+          content: "Content",
+        });
 
       expect(response.statusCode).toBe(400);
       expect(response.body.errorsMessages).toContainEqual(
@@ -1192,7 +1320,11 @@ describe("Blogs", () => {
     it("should return 404 if no blog exists with the given blogId", async () => {
       await blogsTestManager.createPostForBlog(
         "507f1f77bcf86cd799439011",
-        { title: "Post 1", shortDescription: "Short description", content: "Content" },
+        {
+          title: "Post 1",
+          shortDescription: "Short description",
+          content: "Content",
+        },
         { expectedStatusCode: 404, isAuthorized: true },
       );
     });
@@ -1201,7 +1333,11 @@ describe("Blogs", () => {
     it("should return 404 if the blogId is not a valid ObjectId", async () => {
       await blogsTestManager.createPostForBlog(
         "invalid-id",
-        { title: "Post 1", shortDescription: "Short description", content: "Content" },
+        {
+          title: "Post 1",
+          shortDescription: "Short description",
+          content: "Content",
+        },
         { expectedStatusCode: 404, isAuthorized: true },
       );
     });
@@ -1209,7 +1345,11 @@ describe("Blogs", () => {
     //POST /blogs/:blogId/posts 400 title is required
     it("should return 400 if title is missing", async () => {
       const blog = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -1233,13 +1373,21 @@ describe("Blogs", () => {
     //POST /blogs/:blogId/posts 400 title is empty after trim
     it("should return 400 if title is a whitespace-only string", async () => {
       const blog = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       const response = await blogsTestManager.createPostForBlog(
         blog.body.id,
-        { title: "   ", shortDescription: "Short description", content: "Content" },
+        {
+          title: "   ",
+          shortDescription: "Short description",
+          content: "Content",
+        },
         { expectedStatusCode: 400, isAuthorized: true },
       );
       expect(response.body.errorsMessages).toContainEqual(
@@ -1250,13 +1398,21 @@ describe("Blogs", () => {
     //POST /blogs/:blogId/posts 400 title exceeds max length
     it("should return 400 if title exceeds 30 characters", async () => {
       const blog = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       const response = await blogsTestManager.createPostForBlog(
         blog.body.id,
-        { title: "A".repeat(31), shortDescription: "Short description", content: "Content" },
+        {
+          title: "A".repeat(31),
+          shortDescription: "Short description",
+          content: "Content",
+        },
         { expectedStatusCode: 400, isAuthorized: true },
       );
       expect(response.body.errorsMessages).toContainEqual(
@@ -1267,13 +1423,21 @@ describe("Blogs", () => {
     //POST /blogs/:blogId/posts 201 title at max length boundary
     it("should create a post when title is exactly 30 characters", async () => {
       const blog = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       await blogsTestManager.createPostForBlog(
         blog.body.id,
-        { title: "A".repeat(30), shortDescription: "Short description", content: "Content" },
+        {
+          title: "A".repeat(30),
+          shortDescription: "Short description",
+          content: "Content",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
     });
@@ -1281,7 +1445,11 @@ describe("Blogs", () => {
     //POST /blogs/:blogId/posts 400 shortDescription is required
     it("should return 400 if shortDescription is missing", async () => {
       const blog = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -1298,7 +1466,11 @@ describe("Blogs", () => {
     //POST /blogs/:blogId/posts 400 shortDescription is empty after trim
     it("should return 400 if shortDescription is a whitespace-only string", async () => {
       const blog = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -1315,13 +1487,21 @@ describe("Blogs", () => {
     //POST /blogs/:blogId/posts 400 shortDescription exceeds max length
     it("should return 400 if shortDescription exceeds 100 characters", async () => {
       const blog = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       const response = await blogsTestManager.createPostForBlog(
         blog.body.id,
-        { title: "Post 1", shortDescription: "A".repeat(101), content: "Content" },
+        {
+          title: "Post 1",
+          shortDescription: "A".repeat(101),
+          content: "Content",
+        },
         { expectedStatusCode: 400, isAuthorized: true },
       );
       expect(response.body.errorsMessages).toContainEqual(
@@ -1332,13 +1512,21 @@ describe("Blogs", () => {
     //POST /blogs/:blogId/posts 201 shortDescription at max length boundary
     it("should create a post when shortDescription is exactly 100 characters", async () => {
       const blog = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       await blogsTestManager.createPostForBlog(
         blog.body.id,
-        { title: "Post 1", shortDescription: "A".repeat(100), content: "Content" },
+        {
+          title: "Post 1",
+          shortDescription: "A".repeat(100),
+          content: "Content",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
     });
@@ -1346,7 +1534,11 @@ describe("Blogs", () => {
     //POST /blogs/:blogId/posts 400 content is required
     it("should return 400 if content is missing", async () => {
       const blog = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -1363,13 +1555,21 @@ describe("Blogs", () => {
     //POST /blogs/:blogId/posts 400 content is empty after trim
     it("should return 400 if content is a whitespace-only string", async () => {
       const blog = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       const response = await blogsTestManager.createPostForBlog(
         blog.body.id,
-        { title: "Post 1", shortDescription: "Short description", content: "   " },
+        {
+          title: "Post 1",
+          shortDescription: "Short description",
+          content: "   ",
+        },
         { expectedStatusCode: 400, isAuthorized: true },
       );
       expect(response.body.errorsMessages).toContainEqual(
@@ -1380,13 +1580,21 @@ describe("Blogs", () => {
     //POST /blogs/:blogId/posts 400 content exceeds max length
     it("should return 400 if content exceeds 1000 characters", async () => {
       const blog = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       const response = await blogsTestManager.createPostForBlog(
         blog.body.id,
-        { title: "Post 1", shortDescription: "Short description", content: "A".repeat(1001) },
+        {
+          title: "Post 1",
+          shortDescription: "Short description",
+          content: "A".repeat(1001),
+        },
         { expectedStatusCode: 400, isAuthorized: true },
       );
       expect(response.body.errorsMessages).toContainEqual(
@@ -1397,13 +1605,21 @@ describe("Blogs", () => {
     //POST /blogs/:blogId/posts 201 content at max length boundary
     it("should create a post when content is exactly 1000 characters", async () => {
       const blog = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       await blogsTestManager.createPostForBlog(
         blog.body.id,
-        { title: "Post 1", shortDescription: "Short description", content: "A".repeat(1000) },
+        {
+          title: "Post 1",
+          shortDescription: "Short description",
+          content: "A".repeat(1000),
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
     });
@@ -1411,13 +1627,21 @@ describe("Blogs", () => {
     //POST /blogs/:blogId/posts 400 multiple invalid fields
     it("should return 400 with an error message per invalid field when multiple fields are invalid", async () => {
       const blog = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       const response = await blogsTestManager.createPostForBlog(
         blog.body.id,
-        { title: "A".repeat(31), shortDescription: "", content: "A".repeat(1001) },
+        {
+          title: "A".repeat(31),
+          shortDescription: "",
+          content: "A".repeat(1001),
+        },
         { expectedStatusCode: 400, isAuthorized: true },
       );
       expect(response.body.errorsMessages).toContainEqual(
@@ -1443,7 +1667,11 @@ describe("Blogs", () => {
     //DELETE /blogs/:id 204
     it("should delete the blog and return 204 status", async () => {
       const created = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -1459,7 +1687,11 @@ describe("Blogs", () => {
     //DELETE /blogs/:id 401 no Authorization header
     it("should return 401 status for unauthorized request", async () => {
       const created = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -1474,7 +1706,11 @@ describe("Blogs", () => {
     //DELETE /blogs/:id 401 with wrong credentials
     it("should return 401 status for request with wrong credentials", async () => {
       const created = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -1506,7 +1742,11 @@ describe("Blogs", () => {
     //DELETE /blogs/:id 404 on second delete of the same blog
     it("should return 404 when deleting the same blog a second time", async () => {
       const created = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -1526,7 +1766,11 @@ describe("Blogs", () => {
     //PUT /blogs/:id 204
     it("should update the blog and return 204 status", async () => {
       const created = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -1551,12 +1795,20 @@ describe("Blogs", () => {
     //PUT /blogs/:id 401 no Authorization header
     it("should return 401 status for unauthorized request", async () => {
       const created = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       await blogsTestManager.updateBlog(
-        { name: "Updated", description: "Updated Description", websiteUrl: "https://www.updated.com" },
+        {
+          name: "Updated",
+          description: "Updated Description",
+          websiteUrl: "https://www.updated.com",
+        },
         created.body.id,
         { expectedStatusCode: 401 },
       );
@@ -1568,12 +1820,20 @@ describe("Blogs", () => {
     //PUT /blogs/:id 401 with wrong credentials
     it("should return 401 status for request with wrong credentials", async () => {
       const created = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       await blogsTestManager.updateBlog(
-        { name: "Updated", description: "Updated Description", websiteUrl: "https://www.updated.com" },
+        {
+          name: "Updated",
+          description: "Updated Description",
+          websiteUrl: "https://www.updated.com",
+        },
         created.body.id,
         { expectedStatusCode: 401, authHeader: "Basic d3Jvbmc6Y3JlZHM=" },
       );
@@ -1585,7 +1845,11 @@ describe("Blogs", () => {
     //PUT /blogs/:id 404 well-formed id but no matching blog
     it("should return 404 if no blog exists with the given id", async () => {
       await blogsTestManager.updateBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         "507f1f77bcf86cd799439011",
         { expectedStatusCode: 404, isAuthorized: true },
       );
@@ -1594,7 +1858,11 @@ describe("Blogs", () => {
     //PUT /blogs/:id 404 malformed id (not a valid ObjectId)
     it("should return 404 if the id is not a valid ObjectId", async () => {
       await blogsTestManager.updateBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         "invalid-id",
         { expectedStatusCode: 404, isAuthorized: true },
       );
@@ -1603,7 +1871,11 @@ describe("Blogs", () => {
     //PUT /blogs/:id 400 name is required
     it("should return 400 if name is missing", async () => {
       const created = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -1623,12 +1895,20 @@ describe("Blogs", () => {
     //PUT /blogs/:id 400 name is empty after trim
     it("should return 400 if name is a whitespace-only string", async () => {
       const created = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       const response = await blogsTestManager.updateBlog(
-        { name: "   ", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "   ",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         created.body.id,
         { expectedStatusCode: 400, isAuthorized: true },
       );
@@ -1640,12 +1920,20 @@ describe("Blogs", () => {
     //PUT /blogs/:id 400 name exceeds max length
     it("should return 400 if name exceeds 15 characters", async () => {
       const created = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       const response = await blogsTestManager.updateBlog(
-        { name: "A".repeat(16), description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "A".repeat(16),
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         created.body.id,
         { expectedStatusCode: 400, isAuthorized: true },
       );
@@ -1657,12 +1945,20 @@ describe("Blogs", () => {
     //PUT /blogs/:id 204 name at max length boundary
     it("should update the blog when name is exactly 15 characters", async () => {
       const created = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       await blogsTestManager.updateBlog(
-        { name: "A".repeat(15), description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "A".repeat(15),
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         created.body.id,
         { expectedStatusCode: 204, isAuthorized: true },
       );
@@ -1671,7 +1967,11 @@ describe("Blogs", () => {
     //PUT /blogs/:id 400 description is required
     it("should return 400 if description is missing", async () => {
       const created = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -1688,12 +1988,20 @@ describe("Blogs", () => {
     //PUT /blogs/:id 400 description is empty after trim
     it("should return 400 if description is a whitespace-only string", async () => {
       const created = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       const response = await blogsTestManager.updateBlog(
-        { name: "Blog 1", description: "   ", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "   ",
+          websiteUrl: "https://www.blog1.com",
+        },
         created.body.id,
         { expectedStatusCode: 400, isAuthorized: true },
       );
@@ -1705,12 +2013,20 @@ describe("Blogs", () => {
     //PUT /blogs/:id 400 description exceeds max length
     it("should return 400 if description exceeds 500 characters", async () => {
       const created = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       const response = await blogsTestManager.updateBlog(
-        { name: "Blog 1", description: "A".repeat(501), websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "A".repeat(501),
+          websiteUrl: "https://www.blog1.com",
+        },
         created.body.id,
         { expectedStatusCode: 400, isAuthorized: true },
       );
@@ -1722,12 +2038,20 @@ describe("Blogs", () => {
     //PUT /blogs/:id 204 description at max length boundary
     it("should update the blog when description is exactly 500 characters", async () => {
       const created = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       await blogsTestManager.updateBlog(
-        { name: "Blog 1", description: "A".repeat(500), websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "A".repeat(500),
+          websiteUrl: "https://www.blog1.com",
+        },
         created.body.id,
         { expectedStatusCode: 204, isAuthorized: true },
       );
@@ -1736,7 +2060,11 @@ describe("Blogs", () => {
     //PUT /blogs/:id 400 websiteUrl is required
     it("should return 400 if websiteUrl is missing", async () => {
       const created = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -1753,7 +2081,11 @@ describe("Blogs", () => {
     //PUT /blogs/:id 400 websiteUrl is empty after trim
     it("should return 400 if websiteUrl is a whitespace-only string", async () => {
       const created = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -1770,7 +2102,11 @@ describe("Blogs", () => {
     //PUT /blogs/:id 400 websiteUrl exceeds max length
     it("should return 400 if websiteUrl exceeds 100 characters", async () => {
       const created = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -1790,12 +2126,20 @@ describe("Blogs", () => {
     //PUT /blogs/:id 400 websiteUrl invalid format
     it("should return 400 if websiteUrl has an invalid format", async () => {
       const created = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       const response = await blogsTestManager.updateBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "http://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "http://www.blog1.com",
+        },
         created.body.id,
         { expectedStatusCode: 400, isAuthorized: true },
       );
@@ -1807,7 +2151,11 @@ describe("Blogs", () => {
     //PUT /blogs/:id 204 websiteUrl at max length boundary
     it("should update the blog when websiteUrl is exactly 100 characters and valid", async () => {
       const created = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -1824,7 +2172,11 @@ describe("Blogs", () => {
     //PUT /blogs/:id 400 multiple invalid fields
     it("should return 400 with an error message per invalid field when multiple fields are invalid", async () => {
       const created = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -1850,7 +2202,11 @@ describe("Blogs", () => {
     //PUT /blogs/:id 204 both times when updating the same blog twice (idempotent, unlike DELETE)
     it("should return 204 both times when updating the same blog twice with valid data", async () => {
       const created = await blogsTestManager.createBlog(
-        { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+        {
+          name: "Blog 1",
+          description: "Description 1",
+          websiteUrl: "https://www.blog1.com",
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 

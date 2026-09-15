@@ -12,11 +12,13 @@
   "author": "denis-kr",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "express": "^5.1.0",
     "express-validator": "^7.3.1",
     "mongodb": "^7.0.0"
   },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.5",
     "@types/node": "^24.10.1",
     "@types/supertest": "^6.0.3",

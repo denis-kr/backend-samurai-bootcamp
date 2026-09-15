@@ -1,8 +1,14 @@
-import { MongoClient } from "mongodb";
+import { MongoClient, ServerApiVersion } from "mongodb";
 
 export const mongoUri = process.env.MONGO_URI || "mongodb://localhost:27017";
 
-export const client = new MongoClient(mongoUri);
+export const client = new MongoClient(mongoUri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  },
+});
 
 const samurai = client.db("samurai");
 

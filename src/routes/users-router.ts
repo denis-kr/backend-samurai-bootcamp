@@ -58,7 +58,9 @@ router.get(
       pageSize,
       totalCount: totalCount,
       items: users.items.map((user) => ({
-        ...user,
+        login: user.userName,
+        email: user.email,
+        createdAt: user.createdAt,
         id: user._id.toString(),
         _id: undefined,
       })),

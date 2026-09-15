@@ -5,7 +5,9 @@ import { postsRepository } from "../repositories/posts-repo.js";
 
 export const blogsService = {
   findAllBlogs: async (params: FindAllBlogsParams) => {
-    const totalCount = await blogsRepository.getTotalCount();
+    const totalCount = await blogsRepository.getTotalCount(
+      params.searchNameTerm,
+    );
     const blogs = await blogsRepository.findAll(params);
 
     return { items: blogs, totalCount };

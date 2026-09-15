@@ -25,8 +25,11 @@ export const blogsRepository = {
     }
     return blogs.findOne({ _id: new ObjectId(id) });
   },
-  async getTotalCount() {
-    return blogs.countDocuments();
+  async getTotalCount(searchNameTerm?: string | null) {
+    const query = searchNameTerm
+      ? { name: { $regex: searchNameTerm, $options: "i" } }
+      : {};
+    return blogs.countDocuments(query);
   },
   async findAll({
     pageSize,

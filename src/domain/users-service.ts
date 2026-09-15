@@ -4,7 +4,10 @@ import bcrypt from "bcrypt";
 
 export const usersService = {
   async findAllUsers(params: FindAllUsersParams) {
-    const totalCount = await usersRepository.getTotalCount();
+    const totalCount = await usersRepository.getTotalCount({
+      searchLoginTerm: params.searchLoginTerm,
+      searchEmailTerm: params.searchEmailTerm,
+    });
     const items = await usersRepository.findAll(params);
 
     return { items, totalCount };

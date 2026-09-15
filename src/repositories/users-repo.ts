@@ -28,8 +28,23 @@ export const usersRepository = {
     }
     return users.findOne({ _id: new ObjectId(id) });
   },
-  async getTotalCount() {
-    return users.countDocuments();
+  async getTotalCount(fields?: {
+    searchLoginTerm?: string | null;
+    searchEmailTerm?: string | null;
+  }) {
+    const searchFilters = [];
+    if (fields?.searchLoginTerm) {
+      searchFilters.push({
+        login: { $regex: fields.searchLoginTerm, $options: "i" },
+      });
+    }
+    if (fields?.searchEmailTerm) {
+      searchFilters.push({
+        email: { $regex: fields.searchEmailTerm, $options: "i" },
+      });
+    }
+    const query = searchFilters.length ? { $or: searchFilters } : {};
+    return users.countDocuments(query);
   },
   async findByLogin(login: string) {
     return users.findOne({ login });

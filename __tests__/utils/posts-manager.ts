@@ -124,4 +124,46 @@ export const postsTestManager: any = {
 
     return response;
   },
+  async createCommentForPost(
+    postId: string,
+    data: { content?: string },
+    {
+      expectedStatusCode,
+      authHeader,
+    }: { expectedStatusCode: number; authHeader?: string }
+  ) {
+    const requestObject = request(app).post(`/posts/${postId}/comments`);
+
+    if (authHeader) {
+      requestObject.set("Authorization", authHeader);
+    }
+
+    const response = await requestObject.send(data);
+
+    expect(response.statusCode).toBe(expectedStatusCode);
+
+    if (response.statusCode === 201) {
+      expect(response.body.content).toBe(data.content);
+    }
+
+    return response;
+  },
+  async getCommentsForPost(
+    postId: string,
+    query: {
+      pageSize?: number | string;
+      pageNumber?: number | string;
+      sortBy?: string;
+      sortDirection?: string;
+    } = {},
+    { expectedStatusCode }: { expectedStatusCode: number }
+  ) {
+    const response = await request(app)
+      .get(`/posts/${postId}/comments`)
+      .query(query as any);
+
+    expect(response.statusCode).toBe(expectedStatusCode);
+
+    return response;
+  },
 };

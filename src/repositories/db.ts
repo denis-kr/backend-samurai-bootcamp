@@ -12,6 +12,7 @@ export const client = new MongoClient(mongoUri, {
 
 const samurai = client.db("samurai");
 
+export const comments = samurai.collection("comments");
 export const posts = samurai.collection("posts");
 export const blogs = samurai.collection("blogs");
 export const users = samurai.collection("users");

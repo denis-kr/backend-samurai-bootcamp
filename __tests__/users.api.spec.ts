@@ -102,7 +102,7 @@ describe("Users", () => {
       expect(response.body.totalCount).toBe(1);
       expect(response.body.pagesCount).toBe(1);
       expect(response.body.items).toHaveLength(1);
-      expect(response.body.items[0].userName).toBe("banana_usr");
+      expect(response.body.items[0].login).toBe("banana_usr");
     });
 
     //GET /users 200 searchEmailTerm filters case-insensitively and totalCount reflects the filtered set

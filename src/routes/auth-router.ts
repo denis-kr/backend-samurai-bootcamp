@@ -3,8 +3,14 @@ import { loginValidationMiddleware } from "../middleware/validation/validation-u
 import { sendErrorsIfAnyMiddleware } from "../middleware/validation/validation-universal.js";
 import type { RequestWithBody } from "../utils/types.js";
 import { usersService } from "../domain/users-service.js";
+import { jwtService } from "../application/jwt-service.js";
+import { authMiddleware } from "../middleware/auth/auth-middleware.js";
 
 const router: Router = express.Router();
+
+// router.post("/registration-confirmation", () => {});
+// router.post("/registration", () => {});
+// router.post("/auth/registration-email-resending", () => {});
 
 router.post(
   "/login",
@@ -16,17 +22,33 @@ router.post(
   ) => {
     const { password, loginOrEmail } = req.body;
 
-    const checkResult = await usersService.checkCredentials(
-      loginOrEmail,
-      password,
-    );
+    const user = await usersService.checkCredentials(loginOrEmail, password);
 
-    if (checkResult) {
-      res.sendStatus(204);
+    if (user) {
+      const token = await jwtService.createJWT(user);
+      res.status(201).send({ accessToken: token });
     } else {
       res.sendStatus(401);
     }
   },
 );
+
+router.get("/me", authMiddleware, async (req, res) => {
+  const userId = req.userId;
+
+  if (userId) {
+    const user = await usersService.findUserById(userId);
+
+    if (user) {
+      return res.status(200).json({
+        email: user.email,
+        login: user.userName,
+        userId: user._id.toString(),
+      });
+    }
+  }
+
+  return res.sendStatus(401);
+});
 
 export default router;

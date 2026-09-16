@@ -7,7 +7,8 @@ import { postsRepository } from "./repositories/posts-repo.js";
 import { usersRepository } from "./repositories/users-repo.js";
 import usersRouter from "./routes/users-router.js";
 import authRouter from "./routes/auth-router.js";
-// import commentsRouter from "./routes/coments-router.js";
+import commentsRouter from "./routes/coments-router.js";
+import { commentsRepository } from "./repositories/comments-repo.js";
 
 export const app: Express = express();
 
@@ -16,11 +17,12 @@ app.use("/users", usersRouter);
 app.use("/auth", authRouter);
 app.use("/blogs", blogsRouter);
 app.use("/posts", postsRouter);
-// app.use("/comments", commentsRouter);
+app.use("/comments", commentsRouter);
 
 app.delete("/testing/all-data", async (_, res: Response) => {
   await blogsRepository.deleteAll();
   await postsRepository.deleteAll();
   await usersRepository.deleteAll();
+  await commentsRepository.deleteAll();
   res.sendStatus(204);
 });

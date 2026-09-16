@@ -52,7 +52,7 @@ export const usersService = {
     );
 
     if (passwordHash === user.passwordHash) {
-      return true;
+      return user;
     }
     return false;
   },

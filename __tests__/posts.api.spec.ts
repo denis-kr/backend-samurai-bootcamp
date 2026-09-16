@@ -1,5 +1,7 @@
 import { postsTestManager } from "./utils/posts-manager.js";
 import { blogsTestManager } from "./utils/blogs-manager.js";
+import { usersTestManager } from "./utils/users-manager.js";
+import { authTestManager } from "./utils/auth-manager.js";
 import request from "supertest";
 import { MongoClient } from "mongodb";
 import { app } from "../src/setting.js";
@@ -13,10 +15,36 @@ describe("Posts", () => {
 
   const createTestBlog = async () => {
     const response = await blogsTestManager.createBlog(
-      { name: "Blog 1", description: "Description 1", websiteUrl: "https://www.blog1.com" },
+      {
+        name: "Blog 1",
+        description: "Description 1",
+        websiteUrl: "https://www.blog1.com",
+      },
       { expectedStatusCode: 201, isAuthorized: true },
     );
     return response.body;
+  };
+
+  const createTestUserAndLogin = async (
+    overrides: { login?: string; password?: string; email?: string } = {},
+  ) => {
+    const data = {
+      login: overrides.login ?? "commenter",
+      password: overrides.password ?? "password1",
+      email: overrides.email ?? "commenter@mail.com",
+    };
+    await usersTestManager.createUser(data, {
+      expectedStatusCode: 201,
+      isAuthorized: true,
+    });
+    const loginResponse = await authTestManager.login(
+      { loginOrEmail: data.login, password: data.password },
+      { expectedStatusCode: 201 },
+    );
+    return {
+      login: data.login,
+      accessToken: loginResponse.body.accessToken as string,
+    };
   };
 
   beforeEach(() => {
@@ -421,7 +449,12 @@ describe("Posts", () => {
     it("should return 200 without an Authorization header", async () => {
       const blog = await createTestBlog();
       const created = await postsTestManager.createPost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "Content 1", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -437,7 +470,12 @@ describe("Posts", () => {
     it("should return posts with an id field and no _id field", async () => {
       const blog = await createTestBlog();
       await postsTestManager.createPost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "Content 1", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -515,7 +553,12 @@ describe("Posts", () => {
       const blog = await createTestBlog();
       for (const title of ["Post B", "Post A", "Post C"]) {
         await postsTestManager.createPost(
-          { title, shortDescription: "Short description", content: "Content", blogId: blog.id },
+          {
+            title,
+            shortDescription: "Short description",
+            content: "Content",
+            blogId: blog.id,
+          },
           { expectedStatusCode: 201, isAuthorized: true },
         );
       }
@@ -537,7 +580,12 @@ describe("Posts", () => {
       const blog = await createTestBlog();
       for (const title of ["Post B", "Post A", "Post C"]) {
         await postsTestManager.createPost(
-          { title, shortDescription: "Short description", content: "Content", blogId: blog.id },
+          {
+            title,
+            shortDescription: "Short description",
+            content: "Content",
+            blogId: blog.id,
+          },
           { expectedStatusCode: 201, isAuthorized: true },
         );
       }
@@ -657,7 +705,12 @@ describe("Posts", () => {
     it("should return the post matching the given id", async () => {
       const blog = await createTestBlog();
       const created = await postsTestManager.createPost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "Content 1", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -672,7 +725,12 @@ describe("Posts", () => {
     it("should return 200 without an Authorization header", async () => {
       const blog = await createTestBlog();
       const created = await postsTestManager.createPost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "Content 1", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -686,7 +744,12 @@ describe("Posts", () => {
     it("should return the post with an id field and no _id field", async () => {
       const blog = await createTestBlog();
       const created = await postsTestManager.createPost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "Content 1", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -728,7 +791,12 @@ describe("Posts", () => {
     it("should delete the post and return 204 status", async () => {
       const blog = await createTestBlog();
       const created = await postsTestManager.createPost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "Content 1", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -745,7 +813,12 @@ describe("Posts", () => {
     it("should return 401 status for unauthorized request", async () => {
       const blog = await createTestBlog();
       const created = await postsTestManager.createPost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "Content 1", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -761,7 +834,12 @@ describe("Posts", () => {
     it("should return 401 status for request with wrong credentials", async () => {
       const blog = await createTestBlog();
       const created = await postsTestManager.createPost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "Content 1", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -794,7 +872,12 @@ describe("Posts", () => {
     it("should return 404 when deleting the same post a second time", async () => {
       const blog = await createTestBlog();
       const created = await postsTestManager.createPost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "Content 1", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -815,7 +898,12 @@ describe("Posts", () => {
     it("should update the post and return 204 status", async () => {
       const blog = await createTestBlog();
       const created = await postsTestManager.createPost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "Content 1", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -833,7 +921,9 @@ describe("Posts", () => {
 
       const responseGet = await request(app).get(`/posts/${created.body.id}`);
       expect(responseGet.body.title).toBe(updateData.title);
-      expect(responseGet.body.shortDescription).toBe(updateData.shortDescription);
+      expect(responseGet.body.shortDescription).toBe(
+        updateData.shortDescription,
+      );
       expect(responseGet.body.content).toBe(updateData.content);
       expect(responseGet.body.id).toBe(created.body.id);
     });
@@ -842,12 +932,22 @@ describe("Posts", () => {
     it("should return 401 status for unauthorized request", async () => {
       const blog = await createTestBlog();
       const created = await postsTestManager.createPost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "Content 1", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       await postsTestManager.updatePost(
-        { title: "Updated", shortDescription: "Updated Description", content: "Updated Content", blogId: blog.id },
+        {
+          title: "Updated",
+          shortDescription: "Updated Description",
+          content: "Updated Content",
+          blogId: blog.id,
+        },
         created.body.id,
         { expectedStatusCode: 401 },
       );
@@ -860,12 +960,22 @@ describe("Posts", () => {
     it("should return 401 status for request with wrong credentials", async () => {
       const blog = await createTestBlog();
       const created = await postsTestManager.createPost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "Content 1", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       await postsTestManager.updatePost(
-        { title: "Updated", shortDescription: "Updated Description", content: "Updated Content", blogId: blog.id },
+        {
+          title: "Updated",
+          shortDescription: "Updated Description",
+          content: "Updated Content",
+          blogId: blog.id,
+        },
         created.body.id,
         { expectedStatusCode: 401, authHeader: "Basic d3Jvbmc6Y3JlZHM=" },
       );
@@ -878,7 +988,12 @@ describe("Posts", () => {
     it("should return 404 if no post exists with the given id", async () => {
       const blog = await createTestBlog();
       await postsTestManager.updatePost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "Content 1", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         "507f1f77bcf86cd799439011",
         { expectedStatusCode: 404, isAuthorized: true },
       );
@@ -888,7 +1003,12 @@ describe("Posts", () => {
     it("should return 404 if the id is not a valid ObjectId", async () => {
       const blog = await createTestBlog();
       await postsTestManager.updatePost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "Content 1", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         "invalid-id",
         { expectedStatusCode: 404, isAuthorized: true },
       );
@@ -898,12 +1018,21 @@ describe("Posts", () => {
     it("should return 400 if title is missing", async () => {
       const blog = await createTestBlog();
       const created = await postsTestManager.createPost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "Content 1", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       const response = await postsTestManager.updatePost(
-        { shortDescription: "Short description 1", content: "Content 1", blogId: blog.id },
+        {
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         created.body.id,
         { expectedStatusCode: 400, isAuthorized: true },
       );
@@ -919,12 +1048,22 @@ describe("Posts", () => {
     it("should return 400 if title is a whitespace-only string", async () => {
       const blog = await createTestBlog();
       const created = await postsTestManager.createPost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "Content 1", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       const response = await postsTestManager.updatePost(
-        { title: "   ", shortDescription: "Short description 1", content: "Content 1", blogId: blog.id },
+        {
+          title: "   ",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         created.body.id,
         { expectedStatusCode: 400, isAuthorized: true },
       );
@@ -937,12 +1076,22 @@ describe("Posts", () => {
     it("should return 400 if title exceeds 30 characters", async () => {
       const blog = await createTestBlog();
       const created = await postsTestManager.createPost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "Content 1", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       const response = await postsTestManager.updatePost(
-        { title: "A".repeat(31), shortDescription: "Short description 1", content: "Content 1", blogId: blog.id },
+        {
+          title: "A".repeat(31),
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         created.body.id,
         { expectedStatusCode: 400, isAuthorized: true },
       );
@@ -955,12 +1104,22 @@ describe("Posts", () => {
     it("should update the post when title is exactly 30 characters", async () => {
       const blog = await createTestBlog();
       const created = await postsTestManager.createPost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "Content 1", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       await postsTestManager.updatePost(
-        { title: "A".repeat(30), shortDescription: "Short description 1", content: "Content 1", blogId: blog.id },
+        {
+          title: "A".repeat(30),
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         created.body.id,
         { expectedStatusCode: 204, isAuthorized: true },
       );
@@ -970,7 +1129,12 @@ describe("Posts", () => {
     it("should return 400 if shortDescription is missing", async () => {
       const blog = await createTestBlog();
       const created = await postsTestManager.createPost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "Content 1", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -988,12 +1152,22 @@ describe("Posts", () => {
     it("should return 400 if shortDescription is a whitespace-only string", async () => {
       const blog = await createTestBlog();
       const created = await postsTestManager.createPost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "Content 1", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       const response = await postsTestManager.updatePost(
-        { title: "Post 1", shortDescription: "   ", content: "Content 1", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "   ",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         created.body.id,
         { expectedStatusCode: 400, isAuthorized: true },
       );
@@ -1006,12 +1180,22 @@ describe("Posts", () => {
     it("should return 400 if shortDescription exceeds 100 characters", async () => {
       const blog = await createTestBlog();
       const created = await postsTestManager.createPost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "Content 1", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       const response = await postsTestManager.updatePost(
-        { title: "Post 1", shortDescription: "A".repeat(101), content: "Content 1", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "A".repeat(101),
+          content: "Content 1",
+          blogId: blog.id,
+        },
         created.body.id,
         { expectedStatusCode: 400, isAuthorized: true },
       );
@@ -1024,12 +1208,22 @@ describe("Posts", () => {
     it("should update the post when shortDescription is exactly 100 characters", async () => {
       const blog = await createTestBlog();
       const created = await postsTestManager.createPost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "Content 1", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       await postsTestManager.updatePost(
-        { title: "Post 1", shortDescription: "A".repeat(100), content: "Content 1", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "A".repeat(100),
+          content: "Content 1",
+          blogId: blog.id,
+        },
         created.body.id,
         { expectedStatusCode: 204, isAuthorized: true },
       );
@@ -1039,12 +1233,21 @@ describe("Posts", () => {
     it("should return 400 if content is missing", async () => {
       const blog = await createTestBlog();
       const created = await postsTestManager.createPost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "Content 1", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       const response = await postsTestManager.updatePost(
-        { title: "Post 1", shortDescription: "Short description 1", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          blogId: blog.id,
+        },
         created.body.id,
         { expectedStatusCode: 400, isAuthorized: true },
       );
@@ -1057,12 +1260,22 @@ describe("Posts", () => {
     it("should return 400 if content is a whitespace-only string", async () => {
       const blog = await createTestBlog();
       const created = await postsTestManager.createPost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "Content 1", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       const response = await postsTestManager.updatePost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "   ", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "   ",
+          blogId: blog.id,
+        },
         created.body.id,
         { expectedStatusCode: 400, isAuthorized: true },
       );
@@ -1075,12 +1288,22 @@ describe("Posts", () => {
     it("should return 400 if content exceeds 1000 characters", async () => {
       const blog = await createTestBlog();
       const created = await postsTestManager.createPost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "Content 1", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       const response = await postsTestManager.updatePost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "A".repeat(1001), blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "A".repeat(1001),
+          blogId: blog.id,
+        },
         created.body.id,
         { expectedStatusCode: 400, isAuthorized: true },
       );
@@ -1093,12 +1316,22 @@ describe("Posts", () => {
     it("should update the post when content is exactly 1000 characters", async () => {
       const blog = await createTestBlog();
       const created = await postsTestManager.createPost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "Content 1", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       await postsTestManager.updatePost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "A".repeat(1000), blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "A".repeat(1000),
+          blogId: blog.id,
+        },
         created.body.id,
         { expectedStatusCode: 204, isAuthorized: true },
       );
@@ -1108,12 +1341,21 @@ describe("Posts", () => {
     it("should return 400 if blogId is missing", async () => {
       const blog = await createTestBlog();
       const created = await postsTestManager.createPost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "Content 1", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       const response = await postsTestManager.updatePost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "Content 1" },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+        },
         created.body.id,
         { expectedStatusCode: 400, isAuthorized: true },
       );
@@ -1126,12 +1368,22 @@ describe("Posts", () => {
     it("should return 400 if blogId does not reference an existing blog", async () => {
       const blog = await createTestBlog();
       const created = await postsTestManager.createPost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "Content 1", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       const response = await postsTestManager.updatePost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "Content 1", blogId: "507f1f77bcf86cd799439011" },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: "507f1f77bcf86cd799439011",
+        },
         created.body.id,
         { expectedStatusCode: 400, isAuthorized: true },
       );
@@ -1144,12 +1396,22 @@ describe("Posts", () => {
     it("should return 400 with an error message per invalid field when multiple fields are invalid", async () => {
       const blog = await createTestBlog();
       const created = await postsTestManager.createPost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "Content 1", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
       const response = await postsTestManager.updatePost(
-        { title: "A".repeat(31), shortDescription: "", content: "", blogId: "" },
+        {
+          title: "A".repeat(31),
+          shortDescription: "",
+          content: "",
+          blogId: "",
+        },
         created.body.id,
         { expectedStatusCode: 400, isAuthorized: true },
       );
@@ -1174,7 +1436,12 @@ describe("Posts", () => {
     it("should return 204 both times when updating the same post twice with valid data", async () => {
       const blog = await createTestBlog();
       const created = await postsTestManager.createPost(
-        { title: "Post 1", shortDescription: "Short description 1", content: "Content 1", blogId: blog.id },
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
         { expectedStatusCode: 201, isAuthorized: true },
       );
 
@@ -1197,6 +1464,398 @@ describe("Posts", () => {
 
       const responseGet = await request(app).get(`/posts/${created.body.id}`);
       expect(responseGet.body.title).toBe(updateData.title);
+    });
+  });
+
+  describe("POST /posts/:postId/comments", () => {
+    //POST /posts/:postId/comments 201
+    it("should create a new comment for the post and return 201 status", async () => {
+      const blog = await createTestBlog();
+      const post = await postsTestManager.createPost(
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
+        { expectedStatusCode: 201, isAuthorized: true },
+      );
+      const { accessToken, login } = await createTestUserAndLogin();
+
+      const response = await postsTestManager.createCommentForPost(
+        post.body.id,
+        { content: "A".repeat(20) },
+        { expectedStatusCode: 201, authHeader: `Bearer ${accessToken}` },
+      );
+
+      expect(response.body.content).toBe("A".repeat(20));
+      expect(response.body.commentatorInfo).toEqual({
+        userId: expect.any(String),
+        userLogin: login,
+      });
+      expect(response.body.createdAt).toBeDefined();
+      expect(response.body.id).toBeDefined();
+      expect(response.body._id).toBeUndefined();
+    });
+
+    //POST /posts/:postId/comments 401 no Authorization header
+    it("should return 401 status for unauthorized request", async () => {
+      const blog = await createTestBlog();
+      const post = await postsTestManager.createPost(
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
+        { expectedStatusCode: 201, isAuthorized: true },
+      );
+
+      await postsTestManager.createCommentForPost(
+        post.body.id,
+        { content: "A".repeat(20) },
+        { expectedStatusCode: 401 },
+      );
+    });
+
+    //POST /posts/:postId/comments 401 malformed/invalid token
+    it("should return 401 status for an invalid token", async () => {
+      const blog = await createTestBlog();
+      const post = await postsTestManager.createPost(
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
+        { expectedStatusCode: 201, isAuthorized: true },
+      );
+
+      await postsTestManager.createCommentForPost(
+        post.body.id,
+        { content: "A".repeat(20) },
+        { expectedStatusCode: 401, authHeader: "Bearer not-a-real-token" },
+      );
+    });
+
+    //POST /posts/:postId/comments 404 well-formed postId but no matching post
+    it("should return 404 if no post exists with the given postId", async () => {
+      const { accessToken } = await createTestUserAndLogin();
+
+      await postsTestManager.createCommentForPost(
+        "507f1f77bcf86cd799439011",
+        { content: "A".repeat(20) },
+        { expectedStatusCode: 404, authHeader: `Bearer ${accessToken}` },
+      );
+    });
+
+    //POST /posts/:postId/comments 404 malformed postId (not a valid ObjectId)
+    it("should return 404 if the postId is not a valid ObjectId", async () => {
+      const { accessToken } = await createTestUserAndLogin();
+
+      await postsTestManager.createCommentForPost(
+        "invalid-id",
+        { content: "A".repeat(20) },
+        { expectedStatusCode: 404, authHeader: `Bearer ${accessToken}` },
+      );
+    });
+
+    //POST /posts/:postId/comments 400 content is required
+    it("should return 400 if content is missing", async () => {
+      const blog = await createTestBlog();
+      const post = await postsTestManager.createPost(
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
+        { expectedStatusCode: 201, isAuthorized: true },
+      );
+      const { accessToken } = await createTestUserAndLogin();
+
+      const response = await postsTestManager.createCommentForPost(
+        post.body.id,
+        {},
+        { expectedStatusCode: 400, authHeader: `Bearer ${accessToken}` },
+      );
+      expect(response.body.errorsMessages).toContainEqual(
+        expect.objectContaining({ field: "content" }),
+      );
+    });
+
+    //POST /posts/:postId/comments 400 content below minimum length
+    it("should return 400 if content is shorter than 20 characters", async () => {
+      const blog = await createTestBlog();
+      const post = await postsTestManager.createPost(
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
+        { expectedStatusCode: 201, isAuthorized: true },
+      );
+      const { accessToken } = await createTestUserAndLogin();
+
+      const response = await postsTestManager.createCommentForPost(
+        post.body.id,
+        { content: "A".repeat(19) },
+        { expectedStatusCode: 400, authHeader: `Bearer ${accessToken}` },
+      );
+      expect(response.body.errorsMessages).toContainEqual(
+        expect.objectContaining({ field: "content" }),
+      );
+    });
+
+    //POST /posts/:postId/comments 201 content at minimum length boundary
+    it("should create a comment when content is exactly 20 characters", async () => {
+      const blog = await createTestBlog();
+      const post = await postsTestManager.createPost(
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
+        { expectedStatusCode: 201, isAuthorized: true },
+      );
+      const { accessToken } = await createTestUserAndLogin();
+
+      await postsTestManager.createCommentForPost(
+        post.body.id,
+        { content: "A".repeat(20) },
+        { expectedStatusCode: 201, authHeader: `Bearer ${accessToken}` },
+      );
+    });
+
+    //POST /posts/:postId/comments 400 content exceeds max length
+    it("should return 400 if content exceeds 300 characters", async () => {
+      const blog = await createTestBlog();
+      const post = await postsTestManager.createPost(
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
+        { expectedStatusCode: 201, isAuthorized: true },
+      );
+      const { accessToken } = await createTestUserAndLogin();
+
+      const response = await postsTestManager.createCommentForPost(
+        post.body.id,
+        { content: "A".repeat(301) },
+        { expectedStatusCode: 400, authHeader: `Bearer ${accessToken}` },
+      );
+      expect(response.body.errorsMessages).toContainEqual(
+        expect.objectContaining({ field: "content" }),
+      );
+    });
+
+    //POST /posts/:postId/comments 201 content at maximum length boundary
+    it("should create a comment when content is exactly 300 characters", async () => {
+      const blog = await createTestBlog();
+      const post = await postsTestManager.createPost(
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
+        { expectedStatusCode: 201, isAuthorized: true },
+      );
+      const { accessToken } = await createTestUserAndLogin();
+
+      await postsTestManager.createCommentForPost(
+        post.body.id,
+        { content: "A".repeat(300) },
+        { expectedStatusCode: 201, authHeader: `Bearer ${accessToken}` },
+      );
+    });
+  });
+
+  describe("GET /posts/:postId/comments", () => {
+    //GET /posts/:postId/comments 200 empty
+    it("should return 200 with an empty items array and totalCount 0 when the post has no comments", async () => {
+      const blog = await createTestBlog();
+      const post = await postsTestManager.createPost(
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
+        { expectedStatusCode: 201, isAuthorized: true },
+      );
+
+      const response = await postsTestManager.getCommentsForPost(
+        post.body.id,
+        {},
+        { expectedStatusCode: 200 },
+      );
+
+      expect(response.body).toEqual({
+        pagesCount: 0,
+        page: 1,
+        pageSize: 10,
+        totalCount: 0,
+        items: [],
+      });
+    });
+
+    //GET /posts/:postId/comments 200 does not require authentication
+    it("should return 200 without an Authorization header", async () => {
+      const blog = await createTestBlog();
+      const post = await postsTestManager.createPost(
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
+        { expectedStatusCode: 201, isAuthorized: true },
+      );
+      const { accessToken } = await createTestUserAndLogin();
+      await postsTestManager.createCommentForPost(
+        post.body.id,
+        { content: "A".repeat(20) },
+        { expectedStatusCode: 201, authHeader: `Bearer ${accessToken}` },
+      );
+
+      const response = await postsTestManager.getCommentsForPost(
+        post.body.id,
+        {},
+        { expectedStatusCode: 200 },
+      );
+
+      expect(response.body.items).toHaveLength(1);
+    });
+
+    //GET /posts/:postId/comments 200 maps Mongo doc to id, no _id field
+    it("should return comments with an id field and no _id field", async () => {
+      const blog = await createTestBlog();
+      const post = await postsTestManager.createPost(
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
+        { expectedStatusCode: 201, isAuthorized: true },
+      );
+      const { accessToken } = await createTestUserAndLogin();
+      await postsTestManager.createCommentForPost(
+        post.body.id,
+        { content: "A".repeat(20) },
+        { expectedStatusCode: 201, authHeader: `Bearer ${accessToken}` },
+      );
+
+      const response = await postsTestManager.getCommentsForPost(
+        post.body.id,
+        {},
+        { expectedStatusCode: 200 },
+      );
+
+      const item = response.body.items[0];
+      expect(item.id).toBeDefined();
+      expect(item._id).toBeUndefined();
+    });
+
+    //GET /posts/:postId/comments 200 only returns comments for the specified post
+    it("should not return comments belonging to a different post", async () => {
+      const blog = await createTestBlog();
+      const post1 = await postsTestManager.createPost(
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
+        { expectedStatusCode: 201, isAuthorized: true },
+      );
+      const post2 = await postsTestManager.createPost(
+        {
+          title: "Post 2",
+          shortDescription: "Short description 2",
+          content: "Content 2",
+          blogId: blog.id,
+        },
+        { expectedStatusCode: 201, isAuthorized: true },
+      );
+      const { accessToken } = await createTestUserAndLogin();
+
+      await postsTestManager.createCommentForPost(
+        post1.body.id,
+        { content: "Comment for post one " },
+        { expectedStatusCode: 201, authHeader: `Bearer ${accessToken}` },
+      );
+      await postsTestManager.createCommentForPost(
+        post2.body.id,
+        { content: "Comment for post two " },
+        { expectedStatusCode: 201, authHeader: `Bearer ${accessToken}` },
+      );
+
+      const response = await postsTestManager.getCommentsForPost(
+        post1.body.id,
+        {},
+        { expectedStatusCode: 200 },
+      );
+
+      expect(response.body.totalCount).toBe(1);
+      expect(response.body.items).toHaveLength(1);
+    });
+
+    //GET /posts/:postId/comments 404 well-formed postId but no matching post
+    it("should return 404 if no post exists with the given postId", async () => {
+      await postsTestManager.getCommentsForPost(
+        "507f1f77bcf86cd799439011",
+        {},
+        { expectedStatusCode: 404 },
+      );
+    });
+
+    //GET /posts/:postId/comments 404 malformed postId (not a valid ObjectId)
+    it("should return 404 if the postId is not a valid ObjectId", async () => {
+      await postsTestManager.getCommentsForPost(
+        "invalid-id",
+        {},
+        { expectedStatusCode: 404 },
+      );
+    });
+
+    //GET /posts/:postId/comments 200 default pagination when query is omitted
+    it("should apply default pagination (pageSize 10, pageNumber 1) when query is omitted", async () => {
+      const blog = await createTestBlog();
+      const post = await postsTestManager.createPost(
+        {
+          title: "Post 1",
+          shortDescription: "Short description 1",
+          content: "Content 1",
+          blogId: blog.id,
+        },
+        { expectedStatusCode: 201, isAuthorized: true },
+      );
+      const { accessToken } = await createTestUserAndLogin();
+      for (let i = 1; i <= 12; i++) {
+        await postsTestManager.createCommentForPost(
+          post.body.id,
+          { content: `Comment number ${i} `.repeat(2) },
+          { expectedStatusCode: 201, authHeader: `Bearer ${accessToken}` },
+        );
+      }
+
+      const response = await postsTestManager.getCommentsForPost(
+        post.body.id,
+        {},
+        { expectedStatusCode: 200 },
+      );
+
+      expect(response.body.pageSize).toBe(10);
+      expect(response.body.page).toBe(1);
+      expect(response.body.totalCount).toBe(12);
+      expect(response.body.pagesCount).toBe(2);
+      expect(response.body.items).toHaveLength(10);
     });
   });
 });

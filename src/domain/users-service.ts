@@ -1,6 +1,8 @@
+import { add } from "date-fns/add";
 import { usersRepository } from "../repositories/users-repo.js";
 import type { FindAllUsersParams } from "../repositories/users-repo.js";
 import bcrypt from "bcrypt";
+import { emailManager } from "../manager/email-manager.js";
 
 export const usersService = {
   async findAllUsers(params: FindAllUsersParams) {
@@ -26,13 +28,79 @@ export const usersService = {
     );
 
     const newUser = {
-      userName: login,
-      email,
-      passwordHash,
-      passwordSalt,
-      createdAt: new Date(),
+      accountData: {
+        userName: login,
+        email,
+        passwordHash,
+        passwordSalt,
+        createdAt: new Date(),
+      },
+      emailConfirmation: {
+        confirmationCode: crypto.randomUUID(),
+        expirationDate: add(new Date(), { days: 1 }),
+        isConfirmed: false,
+      },
     };
-    return usersRepository.create(newUser);
+
+    const createResult = await usersRepository.create(newUser);
+
+    try {
+      await emailManager.sendConfirmationEmail(
+        email,
+        newUser.emailConfirmation.confirmationCode,
+      );
+    } catch (error) {
+      console.log(error);
+      await usersRepository.deleteById(createResult);
+      return null;
+    }
+
+    return createResult;
+  },
+  async resendConfirmationEmail(email: string) {
+    const user = await usersRepository.findByEmail(email);
+
+    if (!user) {
+      return false;
+    }
+
+    if (user.emailConfirmation.isConfirmed) {
+      return false;
+    }
+
+    try {
+      await emailManager.sendConfirmationEmail(
+        email,
+        user.emailConfirmation.confirmationCode,
+      );
+      return true;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+  },
+  async confirmEmail(code: string) {
+    const user = await usersRepository.findByConfirmationCode(code);
+
+    if (!user) {
+      return false;
+    }
+
+    if (user.emailConfirmation.isConfirmed) {
+      return false;
+    }
+
+    if (
+      user.emailConfirmation.confirmationCode === code ||
+      user.emailConfirmation.expirationDate > new Date()
+    ) {
+      const result = await usersRepository.updateConfirmationStatus(
+        user._id.toString(),
+        true,
+      );
+      return result;
+    }
+    return false;
   },
   async _generatePasswordHash(password: string, passwordSalt: string) {
     return bcrypt.hash(password, passwordSalt);
@@ -43,6 +111,10 @@ export const usersService = {
       (await usersRepository.findByEmail(loginOrEmail));
 
     if (!user) {
+      return false;
+    }
+
+    if (user.emailConfirmation.isConfirmed === false) {
       return false;
     }
 

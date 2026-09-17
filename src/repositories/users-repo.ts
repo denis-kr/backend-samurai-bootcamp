@@ -95,4 +95,18 @@ export const usersRepository = {
   async deleteAll() {
     await users.drop();
   },
+
+  async findByConfirmationCode(code: string) {
+    return users.findOne({ "emailConfirmation.confirmationCode": code });
+  },
+  async updateConfirmationStatus(id: string, isConfirmed: boolean) {
+    if (!ObjectId.isValid(id)) {
+      return false;
+    }
+    const result = await users.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { "emailConfirmation.isConfirmed": isConfirmed } },
+    );
+    return result.modifiedCount === 1;
+  },
 };

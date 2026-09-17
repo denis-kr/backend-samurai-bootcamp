@@ -5,12 +5,69 @@ import type { RequestWithBody } from "../utils/types.js";
 import { usersService } from "../domain/users-service.js";
 import { jwtService } from "../application/jwt-service.js";
 import { authMiddleware } from "../middleware/auth/auth-middleware.js";
+import {
+  registrationConfirmationValidationMiddleware,
+  registrationEmailResendingValidationMiddleware,
+  registrationValidationMiddleware,
+} from "../middleware/validation/validation-auth.js";
 
 const router: Router = express.Router();
 
-// router.post("/registration-confirmation", () => {});
-// router.post("/registration", () => {});
-// router.post("/auth/registration-email-resending", () => {});
+router.post("/refresh-token", () => {});
+router.post("/logout", () => {});
+
+router.post(
+  "/registration-confirmation",
+  registrationConfirmationValidationMiddleware,
+  sendErrorsIfAnyMiddleware,
+  async (req: RequestWithBody<{ code: string }>, res: Response) => {
+    const { code } = req.body;
+
+    const isConfirmed = await usersService.confirmEmail(code);
+
+    if (isConfirmed) {
+      res.sendStatus(204);
+    } else {
+      res.sendStatus(400);
+    }
+  },
+);
+
+router.post(
+  "/registration",
+  registrationValidationMiddleware,
+  sendErrorsIfAnyMiddleware,
+  async (
+    req: RequestWithBody<{ login: string; password: string; email: string }>,
+    res: Response,
+  ) => {
+    const { login, password, email } = req.body;
+
+    const user = await usersService.addNewUser(login, password, email);
+
+    if (user) {
+      res.status(201).send();
+    } else {
+      res.sendStatus(400);
+    }
+  },
+);
+router.post(
+  "/auth/registration-email-resending",
+  registrationEmailResendingValidationMiddleware,
+  sendErrorsIfAnyMiddleware,
+  async (req: RequestWithBody<{ email: string }>, res: Response) => {
+    const { email } = req.body;
+
+    const isResent = await usersService.resendConfirmationEmail(email);
+
+    if (isResent) {
+      res.sendStatus(204);
+    } else {
+      res.sendStatus(400);
+    }
+  },
+);
 
 router.post(
   "/login",

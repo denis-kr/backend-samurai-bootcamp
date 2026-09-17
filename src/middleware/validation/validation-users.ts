@@ -1,7 +1,9 @@
 import { usersRepository } from "./../../repositories/users-repo.js";
 import { body } from "express-validator";
 
-const login = body("login")
+export const login = body("login")
+  .notEmpty()
+  .withMessage("Login is required")
   .isString()
   .withMessage("Login must be a string")
   .isLength({ min: 3, max: 10 })
@@ -18,7 +20,9 @@ const login = body("login")
     }
   });
 
-const email = body("email")
+export const email = body("email")
+  .notEmpty()
+  .withMessage("Email is required")
   .isString()
   .withMessage("Email must be a string")
   .matches(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/)
@@ -31,7 +35,9 @@ const email = body("email")
     }
   });
 
-const password = body("password")
+export const password = body("password")
+  .notEmpty()
+  .withMessage("Password is required")
   .isString()
   .withMessage("Password must be a string")
   .isLength({ min: 6, max: 20 })
